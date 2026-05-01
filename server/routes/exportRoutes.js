@@ -100,7 +100,7 @@ router.get("/marks/:subjectId", verify, requireAdmin, async (req, res) => {
     const [rows] = await db.execute(`
       SELECT s.reg_no, u.name,
              m.internal1, m.internal2, m.internal3,
-             m.internal_converted, m.`external`, m.total
+             m.internal_converted, m.\`external\`, m.total
       FROM marks m
       JOIN students s ON m.student_id = s.id
       JOIN users u ON s.user_id = u.id

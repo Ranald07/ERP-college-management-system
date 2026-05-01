@@ -171,7 +171,7 @@ exports.getStudentsForSubject = async (req, res) => {
              COALESCE(m.internal1, 0) AS internal1,
              COALESCE(m.internal2, 0) AS internal2,
              COALESCE(m.internal3, 0) AS internal3,
-             COALESCE(m.`external`,  0) AS external,
+             COALESCE(m.\`external\`,  0) AS external,
              m.total, m.id AS marks_id
       FROM students s
       JOIN users u ON s.user_id = u.id
