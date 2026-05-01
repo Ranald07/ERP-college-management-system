@@ -9,13 +9,11 @@
     "axios": "^1.6.0",
     "chart.js": "^4.4.0",
     "react-chartjs-2": "^5.2.0",
-    "react-scripts": "5.0.1",
-    "ajv": "^8.11.0"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
-    "postinstall": "node scripts/patch-ajv.js"
+    "build": "CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true react-scripts build"
   },
   "browserslist": {
     "production": [">0.2%", "not dead", "not op_mini all"],
