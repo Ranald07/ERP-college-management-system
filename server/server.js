@@ -59,6 +59,133 @@ app.get("/api/setup", async (req, res) => {
   }
 });
 
+// ── One-time seed route ────────────────────────────────────
+app.get("/api/seed", async (req, res) => {
+  const secret = req.query.secret;
+  if (secret !== process.env.SETUP_SECRET) return res.status(403).send("Forbidden");
+  try {
+    const mysql2 = require("mysql2/promise");
+    const bcrypt2 = require("bcryptjs");
+    const conn = await mysql2.createConnection({
+      host: process.env.DB_HOST, user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD, database: process.env.DB_NAME,
+      port: process.env.DB_PORT || 3306,
+    });
+
+    const tHash = await bcrypt2.hash("teacher123", 10);
+    const sHash = await bcrypt2.hash("student123", 10);
+
+    // Teachers
+    const teachers = [
+      ["Dr. Ramesh Kumar","ramesh@apr.edu","TCH001","CSE","Professor"],
+      ["Dr. Priya Nair","priya@apr.edu","TCH002","CSE","Associate Professor"],
+      ["Mr. Suresh Babu","suresh@apr.edu","TCH003","ECE","Assistant Professor"],
+      ["Dr. Kavitha R","kavitha@apr.edu","TCH004","ECE","Associate Professor"],
+      ["Mr. Arjun Mehta","arjun@apr.edu","TCH005","MECH","Assistant Professor"],
+      ["Dr. Lakshmi Devi","lakshmi@apr.edu","TCH006","IT","Professor"],
+      ["Mr. Venkat Rao","venkat@apr.edu","TCH007","CIVIL","Assistant Professor"],
+      ["Dr. Anitha S","anitha@apr.edu","TCH008","EEE","Associate Professor"],
+    ];
+    for (const [name,email,empId,dept,desig] of teachers) {
+      await conn.execute("INSERT IGNORE INTO users (name,email,password,role) VALUES (?,?,?,'teacher')",[name,email,tHash]);
+      const [[u]] = await conn.execute("SELECT id FROM users WHERE email=?",[email]);
+      const [[d]] = await conn.execute("SELECT id FROM departments WHERE code=?",[dept]);
+      await conn.execute("INSERT IGNORE INTO teachers (user_id,employee_id,dept_id,designation) VALUES (?,?,?,?)",[u.id,empId,d.id,desig]);
+    }
+
+    // Students
+    const students = [
+      ["Arun Kumar","arun@apr.edu","22CSE101","CSE",3,"Male","2004-08-15","Hosteller","H-204","9876543210","TCH001"],
+      ["Priya S","priya.s@apr.edu","22ECE055","ECE",3,"Female","2004-03-22","Day Scholar",null,"9876500001","TCH003"],
+      ["Rahul Verma","rahul@apr.edu","21MECH30","MECH",4,"Male","2003-11-10","Hosteller","H-110","9876500002","TCH005"],
+      ["Sneha Patel","sneha@apr.edu","23IT010","IT",2,"Female","2005-06-05","Day Scholar",null,"9876500003","TCH006"],
+      ["Karthik R","karthik@apr.edu","22CIVIL20","CIVIL",3,"Male","2004-01-18","Hosteller","H-305","9876500004","TCH007"],
+    ];
+    for (const [name,email,reg,dept,year,gender,dob,acc,room,phone,advisor] of students) {
+      await conn.execute("INSERT IGNORE INTO users (name,email,password,role) VALUES (?,?,?,'student')",[name,email,sHash]);
+      const [[u]] = await conn.execute("SELECT id FROM users WHERE email=?",[email]);
+      const [[d]] = await conn.execute("SELECT id FROM departments WHERE code=?",[dept]);
+      const [[t]] = await conn.execute("SELECT id FROM teachers WHERE employee_id=?",[advisor]);
+      await conn.execute("INSERT IGNORE INTO students (user_id,reg_no,dept_id,year,gender,dob,accommodation_type,room_no,phone,staff_advisor_id) VALUES (?,?,?,?,?,?,?,?,?,?)",
+        [u.id,reg,d.id,year,gender,dob,acc,room||null,phone,t.id]);
+    }
+
+    // Subjects
+    const subjects = [
+      ["CS501","Data Structures & Algorithms","CSE",3,5,4],
+      ["CS502","Operating Systems","CSE",3,5,3],
+      ["CS503","Computer Networks","CSE",3,5,3],
+      ["CS504","Database Management Systems","CSE",3,5,4],
+      ["CS505","Software Engineering","CSE",3,5,3],
+      ["EC501","Digital Signal Processing","ECE",3,5,4],
+      ["EC502","VLSI Design","ECE",3,5,3],
+      ["EC503","Microprocessors","ECE",3,5,3],
+      ["ME701","CAD/CAM","MECH",4,7,4],
+      ["ME702","Robotics","MECH",4,7,3],
+      ["ME703","Industrial Engineering","MECH",4,7,3],
+      ["IT301","Python Programming","IT",2,3,4],
+      ["IT302","Web Technologies","IT",2,3,3],
+      ["IT303","Data Communication","IT",2,3,3],
+      ["CV501","Structural Analysis","CIVIL",3,5,4],
+      ["CV502","Concrete Technology","CIVIL",3,5,3],
+      ["CV503","Fluid Mechanics","CIVIL",3,5,3],
+    ];
+    for (const [code,name,dept,year,sem,credits] of subjects) {
+      const [[d]] = await conn.execute("SELECT id FROM departments WHERE code=?",[dept]);
+      await conn.execute("INSERT IGNORE INTO subjects (code,name,dept_id,year,semester,credits) VALUES (?,?,?,?,?,?)",[code,name,d.id,year,sem,credits]);
+    }
+
+    // Teacher-Subject assignments
+    const assignments = [
+      ["TCH001","CS501"],["TCH001","CS502"],["TCH002","CS503"],["TCH002","CS504"],["TCH002","CS505"],
+      ["TCH003","EC501"],["TCH003","EC502"],["TCH004","EC503"],
+      ["TCH005","ME701"],["TCH005","ME702"],["TCH005","ME703"],
+      ["TCH006","IT301"],["TCH006","IT302"],["TCH006","IT303"],
+      ["TCH007","CV501"],["TCH007","CV502"],["TCH007","CV503"],
+    ];
+    for (const [emp,code] of assignments) {
+      const [[t]] = await conn.execute("SELECT id FROM teachers WHERE employee_id=?",[emp]);
+      const [[s]] = await conn.execute("SELECT id FROM subjects WHERE code=?",[code]);
+      await conn.execute("INSERT IGNORE INTO teacher_subjects (teacher_id,subject_id) VALUES (?,?)",[t.id,s.id]);
+    }
+
+    // Marks
+    const marks = [
+      ["22CSE101","CS501","TCH001",5,42,38,44,52],
+      ["22CSE101","CS502","TCH001",5,40,41,39,50],
+      ["22CSE101","CS503","TCH002",5,44,40,43,55],
+      ["22ECE055","EC501","TCH003",5,36,38,37,45],
+      ["22ECE055","EC502","TCH003",5,38,35,37,43],
+      ["21MECH30","ME701","TCH005",7,32,34,33,42],
+      ["21MECH30","ME702","TCH005",7,35,33,36,44],
+      ["23IT010","IT301","TCH006",3,47,45,48,58],
+      ["23IT010","IT302","TCH006",3,44,46,45,56],
+      ["22CIVIL20","CV501","TCH007",5,33,35,32,43],
+      ["22CIVIL20","CV502","TCH007",5,36,34,35,45],
+    ];
+    for (const [reg,code,emp,sem,i1,i2,i3,ext] of marks) {
+      const [[st]] = await conn.execute("SELECT id FROM students WHERE reg_no=?",[reg]);
+      const [[su]] = await conn.execute("SELECT id FROM subjects WHERE code=?",[code]);
+      const [[t]]  = await conn.execute("SELECT id FROM teachers WHERE employee_id=?",[emp]);
+      await conn.execute(
+        "INSERT IGNORE INTO marks (student_id,subject_id,teacher_id,semester,internal1,internal2,internal3,`external`) VALUES (?,?,?,?,?,?,?,?)",
+        [st.id,su.id,t.id,sem,i1,i2,i3,ext]
+      );
+    }
+
+    // Announcement
+    const [[admin]] = await conn.execute("SELECT id FROM users WHERE email='admin@apr.edu'");
+    await conn.execute("INSERT IGNORE INTO announcements (created_by,title,body,target_role) VALUES (?,?,?,'all')",
+      [admin.id,"Welcome to APR College ERP","Login with your credentials to access the system."]);
+
+    await conn.end();
+    res.send("✅ Seed complete! All teachers, students, subjects, marks and announcements added.");
+  } catch(e) {
+    console.error(e);
+    res.status(500).send("Seed failed: " + e.message);
+  }
+});
+
 // ── API Routes ─────────────────────────────────────────────
 app.use("/api/auth",          require("./routes/authRoutes"));
 app.use("/api/departments",   require("./routes/departmentRoutes"));
