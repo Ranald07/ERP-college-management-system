@@ -2,9 +2,6 @@
   "name": "college-erp-client",
   "version": "1.0.0",
   "private": true,
-  "resolutions": {
-    "ajv": "^8.11.0"
-  },
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -17,7 +14,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true react-scripts build"
+    "build": "CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
+    "postinstall": "node scripts/patch-ajv.js"
   },
   "browserslist": {
     "production": [">0.2%", "not dead", "not op_mini all"],
