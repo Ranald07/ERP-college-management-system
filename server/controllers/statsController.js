@@ -54,7 +54,7 @@ exports.getStudentStats = async (req, res) => {
   try {
     const { id } = req.params;
     const [rows] = await db.execute(`
-      SELECT m.semester, m.total, m.internal1, m.internal2, m.internal3, m.\`external\`,
+      SELECT m.semester, m.total, m.internal1, m.internal2, m.internal3, m.ext_marks,
              s.name AS subject_name, s.code AS subject_code, s.credits
       FROM marks m
       JOIN subjects s ON m.subject_id = s.id

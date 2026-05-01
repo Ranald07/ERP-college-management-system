@@ -163,13 +163,13 @@ app.get("/api/seed", async (req, res) => {
       ["22CIVIL20","CV501","TCH007",5,33,35,32,43],
       ["22CIVIL20","CV502","TCH007",5,36,34,35,45],
     ];
-    for (const [reg,code,emp,sem,i1,i2,i3,ext] of marks) {
+    for (const [reg,code,emp,sem,i1,i2,i3,ext_marks] of marks) {
       const [[st]] = await conn.execute("SELECT id FROM students WHERE reg_no=?",[reg]);
       const [[su]] = await conn.execute("SELECT id FROM subjects WHERE code=?",[code]);
       const [[t]]  = await conn.execute("SELECT id FROM teachers WHERE employee_id=?",[emp]);
       await conn.execute(
-        "INSERT IGNORE INTO marks (student_id,subject_id,teacher_id,semester,internal1,internal2,internal3,`external`) VALUES (?,?,?,?,?,?,?,?)",
-        [st.id,su.id,t.id,sem,i1,i2,i3,ext]
+        "INSERT IGNORE INTO marks (student_id,subject_id,teacher_id,semester,internal1,internal2,internal3,ext_marks) VALUES (?,?,?,?,?,?,?,?)",
+        [st.id,su.id,t.id,sem,i1,i2,i3,ext_marks]
       );
     }
 

@@ -100,7 +100,7 @@ router.get("/marks/:subjectId", verify, requireAdmin, async (req, res) => {
     const [rows] = await db.execute(`
       SELECT s.reg_no, u.name,
              m.internal1, m.internal2, m.internal3,
-             m.internal_converted, m.\`external\`, m.total
+             m.internal_converted, m.ext_marks, m.total
       FROM marks m
       JOIN students s ON m.student_id = s.id
       JOIN users u ON s.user_id = u.id
@@ -117,7 +117,7 @@ router.get("/marks/:subjectId", verify, requireAdmin, async (req, res) => {
       { header: "Internal 2 (/50)",key: "internal2" },
       { header: "Internal 3 (/50)",key: "internal3" },
       { header: "Converted (/40)", key: "internal_converted" },
-      { header: "External (/60)",  key: "external" },
+      { header: "External (/60)",  key: "ext_marks" },
       { header: "Total (/100)",    key: "total" },
       { header: "Pass/Fail",       key: "result" },
     ];
