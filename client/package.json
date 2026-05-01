@@ -14,7 +14,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
-    "postinstall": "node -e \"const fs=require('fs'),p='node_modules/fork-ts-checker-webpack-plugin';if(fs.existsSync(p)){fs.rmSync(p,{recursive:true,force:true});console.log('Removed fork-ts-checker-webpack-plugin')}\""
+    "postinstall": "node -e \"const fs=require('fs');const p='node_modules/fork-ts-checker-webpack-plugin/node_modules/ajv-keywords/keywords/_formatLimit.js';if(fs.existsSync(p)){fs.writeFileSync(p,'module.exports=function(){return function(){}};');console.log('Patched _formatLimit.js')}\""
   },
   "browserslist": {
     "production": [">0.2%", "not dead", "not op_mini all"],
