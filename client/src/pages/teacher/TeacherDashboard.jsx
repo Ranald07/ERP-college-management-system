@@ -42,7 +42,7 @@ const TeacherDashboard = () => {
           internal1: Number(s.internal1) || 0,
           internal2: Number(s.internal2) || 0,
           internal3: Number(s.internal3) || 0,
-          external:  Number(s.external)  || 0,
+          ext_marks: Number(s.ext_marks)  || 0,
         };
       });
       setMarks(m);
@@ -52,7 +52,7 @@ const TeacherDashboard = () => {
   };
 
   const handleMarkChange = (studentId, field, value) => {
-    const maxMap = { internal1: 50, internal2: 50, internal3: 50, external: 60 };
+    const maxMap = { internal1: 50, internal2: 50, internal3: 50, ext_marks: 60 };
     const val = Math.min(Math.max(0, Number(value) || 0), maxMap[field]);
     setMarks(prev => ({ ...prev, [studentId]: { ...prev[studentId], [field]: val } }));
   };
@@ -70,7 +70,7 @@ const TeacherDashboard = () => {
           internal1:  m.internal1,
           internal2:  m.internal2,
           internal3:  m.internal3,
-          external:   m.external,
+          ext_marks:  m.ext_marks,
         })),
       });
       if (res.success) {
@@ -167,9 +167,9 @@ const TeacherDashboard = () => {
                   </thead>
                   <tbody>
                     {studentsData.students.map(s => {
-                      const m = marks[s.id] || { internal1: 0, internal2: 0, internal3: 0, external: 0 };
+                      const m = marks[s.id] || { internal1: 0, internal2: 0, internal3: 0, ext_marks: 0 };
                       const converted = parseFloat(((m.internal1 + m.internal2 + m.internal3) * 40 / 150).toFixed(2));
-                      const total     = parseFloat((converted + m.external).toFixed(2));
+                      const total     = parseFloat((converted + m.ext_marks).toFixed(2));
                       return (
                         <tr key={s.id}>
                           <td style={{ fontWeight: 600, color: "#1e40af" }}>{s.reg_no}</td>
@@ -178,7 +178,7 @@ const TeacherDashboard = () => {
                             { field: "internal1", max: 50 },
                             { field: "internal2", max: 50 },
                             { field: "internal3", max: 50 },
-                            { field: "external",  max: 60 },
+                            { field: "ext_marks", max: 60 },
                           ].map(({ field, max }) => (
                             <td key={field}>
                               <input
