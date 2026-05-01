@@ -32,13 +32,13 @@ exports.saveBulkMarks = async (req, res) => {
       if (!m.student_id) continue;
       await conn.execute(
         `INSERT INTO marks
-           (student_id, subject_id, teacher_id, semester, internal1, internal2, internal3, external)
+           (student_id, subject_id, teacher_id, semester, internal1, internal2, internal3, \`external\`)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE
            internal1  = VALUES(internal1),
            internal2  = VALUES(internal2),
            internal3  = VALUES(internal3),
-           external   = VALUES(external),
+           \`external\`   = VALUES(\`external\`),
            teacher_id = VALUES(teacher_id)`,
         [
           m.student_id, subject_id, teacherId || null, semester,
@@ -70,7 +70,7 @@ exports.getMarksByStudent = async (req, res) => {
     const [rows] = await db.execute(`
       SELECT m.id, m.semester,
              m.internal1, m.internal2, m.internal3,
-             m.internal_converted, m.external, m.total,
+             m.internal_converted, m.\`external\`, m.total,
              s.id AS subject_id, s.code AS subject_code,
              s.name AS subject_name, s.credits,
              u.name AS teacher_name
