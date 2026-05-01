@@ -1,7 +1,4 @@
 {
-  "build": {
-    "buildCommand": "cd server && npm install --legacy-peer-deps && cd ../client && npm install --legacy-peer-deps && npm run build"
-  },
   "deploy": {
     "startCommand": "node server/server.js"
   }

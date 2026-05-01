@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs_18"]
+nixPkgs = ["nodejs_18", "npm-9_x"]
 
 [phases.install]
 cmds = [
@@ -9,8 +9,7 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "cd server && npm install --legacy-peer-deps",
-  "cd client && npm install --legacy-peer-deps && npm install ajv@^8.11.0 --legacy-peer-deps && npm run build"
+  "cd client && npm run build"
 ]
 
 [start]
