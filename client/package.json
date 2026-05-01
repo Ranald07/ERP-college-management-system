@@ -13,18 +13,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true react-scripts build"
+    "build": "CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
+    "postinstall": "node -e \"const fs=require('fs'),p='node_modules/fork-ts-checker-webpack-plugin';if(fs.existsSync(p)){fs.rmSync(p,{recursive:true,force:true});console.log('Removed fork-ts-checker-webpack-plugin')}\""
   },
   "browserslist": {
     "production": [">0.2%", "not dead", "not op_mini all"],
     "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
-  },
-  "overrides": {
-    "ajv": "^8.0.0",
-    "fork-ts-checker-webpack-plugin": {
-      "ajv": "^8.0.0",
-      "ajv-keywords": "^5.0.0",
-      "schema-utils": "^4.0.0"
-    }
   }
 }
