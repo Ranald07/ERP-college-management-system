@@ -9,7 +9,8 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "cd client && DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true TSC_COMPILE_ON_ERROR=true CI=false npm run build"
+  "cd server && npm install --legacy-peer-deps",
+  "cd client && npm install --legacy-peer-deps && npm install ajv@^8.11.0 --legacy-peer-deps && npm run build"
 ]
 
 [start]

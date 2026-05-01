@@ -2,6 +2,9 @@
   "name": "college-erp-client",
   "version": "1.0.0",
   "private": true,
+  "resolutions": {
+    "ajv": "^8.11.0"
+  },
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -9,12 +12,12 @@
     "axios": "^1.6.0",
     "chart.js": "^4.4.0",
     "react-chartjs-2": "^5.2.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "ajv": "^8.11.0"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true react-scripts build",
-    "postinstall": "node -e \"const fs=require('fs');const p='node_modules/fork-ts-checker-webpack-plugin/node_modules/ajv-keywords/keywords/_formatLimit.js';if(fs.existsSync(p)){fs.writeFileSync(p,'module.exports=function(){return function(){}};');console.log('Patched _formatLimit.js')}\""
+    "build": "CI=false DISABLE_ESLINT_PLUGIN=true SKIP_PREFLIGHT_CHECK=true react-scripts build"
   },
   "browserslist": {
     "production": [">0.2%", "not dead", "not op_mini all"],
