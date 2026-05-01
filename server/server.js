@@ -7,6 +7,20 @@ const app     = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
+// ── One-time setup route (remove after first use) ─────────
+app.get("/api/setup", async (req, res) => {
+  const secret = req.query.secret;
+  if (secret !== process.env.SETUP_SECRET) return res.status(403).send("Forbidden");
+  try {
+    const { execSync } = require("child_process");
+    execSync("node server/migrate.js", { stdio: "inherit" });
+    execSync("node server/seed.js",    { stdio: "inherit" });
+    res.send("Setup complete! Remove SETUP_SECRET variable now.");
+  } catch (e) {
+    res.status(500).send("Setup failed: " + e.message);
+  }
+});
+
 // ── API Routes ─────────────────────────────────────────────
 app.use("/api/auth",          require("./routes/authRoutes"));
 app.use("/api/departments",   require("./routes/departmentRoutes"));
