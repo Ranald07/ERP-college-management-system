@@ -3,6 +3,11 @@ node_modules/
 client/node_modules/
 server/node_modules/
 
+# Lock files (Railway regenerates these)
+package-lock.json
+client/package-lock.json
+server/package-lock.json
+
 # Environment variables — NEVER commit these
 server/.env
 client/.env
