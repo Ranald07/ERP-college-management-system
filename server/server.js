@@ -50,6 +50,31 @@ app.get("/api/setup", async (req, res) => {
   } catch(e) { res.status(500).send("Setup failed: " + e.message); }
 });
 
+// Password reset route
+app.get("/api/resetpw", async (req, res) => {
+  const secret = req.query.secret;
+  if (secret !== process.env.SETUP_SECRET) return res.status(403).send("Forbidden");
+  try {
+    const mysql2  = require("mysql2/promise");
+    const bcrypt2 = require("bcryptjs");
+    const conn = await mysql2.createConnection({
+      host: process.env.DB_HOST, user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD, database: process.env.DB_NAME,
+      port: process.env.DB_PORT || 3306,
+    });
+    const sHash = await bcrypt2.hash("student123", 10);
+    const tHash = await bcrypt2.hash("teacher123", 10);
+    const aHash = await bcrypt2.hash("admin123",   10);
+    await conn.execute("UPDATE users SET password=? WHERE role='student'", [sHash]);
+    await conn.execute("UPDATE users SET password=? WHERE role='teacher'", [tHash]);
+    await conn.execute("UPDATE users SET password=? WHERE role='admin'",   [aHash]);
+    const [[{sc}]] = await conn.execute("SELECT COUNT(*) AS sc FROM users WHERE role='student'");
+    const [[{tc}]] = await conn.execute("SELECT COUNT(*) AS tc FROM users WHERE role='teacher'");
+    await conn.end();
+    res.send(`<pre>Passwords reset!\n  ${sc} students → student123\n  ${tc} teachers → teacher123\n  admin → admin123\n\nLogin now at your Railway URL.</pre>`);
+  } catch(e) { res.status(500).send("Failed: " + e.message); }
+});
+
 // Seed route - idempotent
 app.get("/api/seed", async (req, res) => {
   const secret = req.query.secret;
